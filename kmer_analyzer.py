@@ -78,7 +78,7 @@ def write_results_to_file(kmer_data, output_filename):
   """
   sorted_kmers = sorted(kmer_data.keys()) #sorts kmers in alaphabetical order
     
-  with open(output_filename, 'a') as f: #opens outputfile and will append to whatever is already in there
+  with open(output_filename, 'w') as f: #opens outputfile and will overwrite whatever is already in there
     for kmer in sorted_kmers: #loop through kmer list
       next_chars = kmer_data[kmer]['next_chars'] #Get the next characters for each kmer
             
@@ -108,6 +108,8 @@ def main():
     
   print(f"Reading sequences from {sequence_file}...") #print to know process has started
 
+  all_kmer_data = {} #Creates master dictionary to merge kmers across sequences
+  
   with open(sequence_file, 'r') as f: #open input file
     for sequence in f:
       sequence = sequence.strip() #removes everything from each sequence except the string
@@ -117,8 +119,17 @@ def main():
         continue 
             
       kmer_data = count_kmers_with_context(sequence, k)  #creates kmer_data dictionary
+      
+      for kmer in kmer_data: #merges kmers from each sequence into one master dictionary
+        for next_char, count in kmer_data[kmer]['next_chars'].items():
+          for _ in range(count):
+            update_kmer_count(all_kmer_data, kmer, next_char)
             
-      write_results_to_file(kmer_data, output_file) #writes dictionary to output file
+      if not kmer_data[kmer]['next_chars']: #takes care of kmers at the end of a sequence (i.e. no next character)
+        for _ in range(kmer_data[kmer]['count']):
+          update_kmer_count(all_kmer_data, kmer, '')
+            
+  write_results_to_file(all_kmer_data, output_file) #writes dictionary to output file
 
 #Run the script
 if __name__ == '__main__':
