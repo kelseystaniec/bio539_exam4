@@ -37,7 +37,7 @@ def test_validate_sequence_empty():
 
 #Deal with negative kmer size
 def test_validate_sequence_negsize():
-  sequence = sample_string
+  sequence = "GCCTGA"
   k = -2
   result = validate_sequence(sequence, k)
   exp = False
