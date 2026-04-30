@@ -114,3 +114,26 @@ def test_count_kmers_with_context_equalk():
 
 
 from kmer_analyzer import write_results_to_file
+
+#Basic test
+def test_write_results_to_file_basic(tmp_path):
+  kmer_data = {"GCCT": {"count": 1, "next_chars": {"G": 1}},"GCAT": {"count": 2, "next_chars": {"G": 1,"C":1}}}
+  output_file = tmp_path/"test_kmer_data.txt"
+  result = write_results_to_file(kmer_data, output_file)
+  content = output_file.read_text()
+  exp = "GCAT C:1 G:1\nGCCT G:1\n"
+  assert content == exp
+
+#Empty dictionary
+def test_write_results_to_file_empty(tmp_path):
+  kmer_data = {}
+  output_file = tmp_path/"test_kmer_data.txt"
+  result = write_results_to_file(kmer_data, output_file)
+  content = output_file.read_text()
+  exp = ""
+  assert content == exp
+
+
+
+
+
